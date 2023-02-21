@@ -378,8 +378,9 @@ namespace Microsoft.FamilyShow.Controls.Diagram
     /// <summary>
     /// Create the parent row. The row contains a group for each parent. 
     /// Each groups contains the parent, spouses and siblings.
+    /// MB: Default to not showing siblings unless at primary row
     /// </summary>
-    public DiagramRow CreateParentRow(Collection<Person> parents, double scale, double scaleRelated)
+    public DiagramRow CreateParentRow(Collection<Person> parents, double scale, double scaleRelated, bool showSiblings = false)
     {
       // Set up the row.
       DiagramRow row = new DiagramRow();
@@ -416,14 +417,17 @@ namespace Microsoft.FamilyShow.Controls.Diagram
         AddSpouseNodes(person, row, group, previousSpouses,
             NodeType.Spouse, scaleRelated, false);
 
-        // Siblings.
-        Collection<Person> siblings = person.Siblings;
-        AddSiblingNodes(row, group, siblings, NodeType.Sibling, scaleRelated);
+        if (showSiblings)
+        { 
+            // Siblings.
+            Collection<Person> siblings = person.Siblings;
+            AddSiblingNodes(row, group, siblings, NodeType.Sibling, scaleRelated);
 
-        // Half siblings.
-        Collection<Person> halfSiblings = person.HalfSiblings;
-        AddSiblingNodes(row, group, halfSiblings, left ?
-            NodeType.SiblingLeft : NodeType.SiblingRight, scaleRelated);
+            // Half siblings.
+            Collection<Person> halfSiblings = person.HalfSiblings;
+            AddSiblingNodes(row, group, halfSiblings, left ?
+                NodeType.SiblingLeft : NodeType.SiblingRight, scaleRelated);
+        }
 
         // Connections.
         AddChildConnections(person);

@@ -53,8 +53,15 @@ namespace Microsoft.FamilyShowLib
           case ".jpg":
             CreateDocumentPart(package, file, MediaTypeNames.Image.Jpeg, storeInDirectory);
             break;
+          case ".jepg":
+            CreateDocumentPart(package, file, MediaTypeNames.Image.Jpeg, storeInDirectory);
+            break;
+
           case ".gif":
             CreateDocumentPart(package, file, MediaTypeNames.Image.Gif, storeInDirectory);
+            break;
+          case ".png":
+            CreateDocumentPart(package, file, "image/png", storeInDirectory);
             break;
           case ".rtf":
             CreateDocumentPart(package, file, MediaTypeNames.Text.RichText, storeInDirectory);
@@ -175,7 +182,7 @@ namespace Microsoft.FamilyShowLib
       string pathToTarget = targetDirectory;
 
       // Remove leading slash from the Part Uri, and make a new Uri from the result
-      string stringPart = packagePart.Uri.ToString().TrimStart('/');
+      string stringPart = packagePart.Uri.ToString().TrimStart('/').Replace("%20"," ");
       Uri partUri = new Uri(stringPart, UriKind.Relative);
 
       // Create a full Uri to the Part based on the Package Uri

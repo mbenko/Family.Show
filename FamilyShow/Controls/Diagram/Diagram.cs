@@ -44,8 +44,9 @@ namespace Microsoft.FamilyShow.Controls.Diagram
       // Duration for the new person animation.
       public static double NewPersonAnimationDuration = 250;
 
+      // MB: Increase Max Nodes to 200
       // Stop adding new rows when the number of nodes exceeds the max node limit.
-      public static int MaximumNodes = 50;
+      public static int MaximumNodes = 200;
 
       // Group space.
       public static double PrimaryRowGroupSpace = 20;

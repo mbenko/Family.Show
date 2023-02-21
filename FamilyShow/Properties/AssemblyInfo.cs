@@ -10,12 +10,13 @@ using System.Windows;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
+// UPDATED: Mike Benkovich 1/2/2023
 [assembly: AssemblyTitle("Family.Show")]
 [assembly: AssemblyDescription("Family.Show, a WPF Best-Practice Sample Application for Genealogy")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Freddy Juhel")]
+[assembly: AssemblyCompany("Imagine Technologies, Inc.")]
 [assembly: AssemblyProduct("Family.Show")]
-[assembly: AssemblyCopyright("Copyright @ MIT 2017-2022 Freddy Juhel")]
+[assembly: AssemblyCopyright("Copyright @ MIT 2022-2023 Mike Benkovich")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 [assembly: ComVisible(false)]
@@ -58,5 +59,5 @@ using System.Windows;
 //
 // You can specify all the values or you can default the Revision and Build Numbers 
 // by using the '*' as shown below:
-[assembly: AssemblyVersion("3.4.1.0")]
-[assembly: AssemblyFileVersion("3.4.1.0")]
+[assembly: AssemblyVersion("3.5.0.1")]
+[assembly: AssemblyFileVersion("3.5.0.1")]

@@ -248,7 +248,7 @@
                 ImportButtonClick="WelcomeUserControl_ImportButtonClick"
                 NewButtonClick="WelcomeUserControl_NewButtonClick"
                 OpenButtonClick="WelcomeUserControl_OpenButtonClick"
-                OpenRecentFileButtonClick="WelcomeUserControl_OpenRecentFileButtonClick" />
+                OpenRecentFileButtonClick="WelcomeUserControl_OpenRecentFileButtonClick" Loaded="WelcomeUserControl_Loaded" />
 
       <!--  Person Info Control  -->
       <local:PersonInfo

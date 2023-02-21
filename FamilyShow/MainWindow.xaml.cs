@@ -996,6 +996,11 @@ namespace Microsoft.FamilyShow
       return new DateTime();
     }
 
-    #endregion
-  }
+        #endregion
+
+        private void WelcomeUserControl_Loaded(object sender, RoutedEventArgs e)
+        {
+
+        }
+    }
 }
