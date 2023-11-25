@@ -165,7 +165,8 @@
           <MenuItem Command="Save" Header="Save" />
           <MenuItem Command="SaveAs" Header="Save As..." />
           <MenuItem Command="local:MainWindow.ExportXpsCommand" Header="Save to XPS..." />
-        </MenuItem>
+          <MenuItem Command="Print" Header="Print"/>
+                </MenuItem>
         <MenuItem
                     x:Name="GedcomMenu"
                     Header="_GEDCOM"
@@ -223,7 +224,7 @@
                     DataContext="{Binding}"
                     EveryoneDeleted="DetailsControl_EveryoneDeleted"
                     FamilyDataClick="DetailsControl_FamilyDataClick"
-                    PersonInfoClick="DetailsControl_PersonInfoClick" />
+                    PersonInfoClick="DetailsControl_PersonInfoClick" Loaded="DetailsControl_Loaded" />
         <GridSplitter
                     Grid.Column="1"
                     Width="5"

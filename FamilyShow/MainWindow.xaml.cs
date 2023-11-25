@@ -1002,5 +1002,10 @@ namespace Microsoft.FamilyShow
         {
 
         }
+
+        private void DetailsControl_Loaded(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }

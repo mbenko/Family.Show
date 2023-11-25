@@ -53,7 +53,7 @@ namespace Microsoft.FamilyShowLib
           case ".jpg":
             CreateDocumentPart(package, file, MediaTypeNames.Image.Jpeg, storeInDirectory);
             break;
-          case ".jepg":
+          case ".jpeg":
             CreateDocumentPart(package, file, MediaTypeNames.Image.Jpeg, storeInDirectory);
             break;
 
