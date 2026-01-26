@@ -9,6 +9,8 @@
 
     <!--  used when editing a date cell  -->
     <local:DateFormattingConverter x:Key="DateFormattingConverter" />
+    <local:YearOrDateConverter x:Key="YearOrDateConverter" />
+    <local:NullToDashConverter x:Key="NullToDashConverter" />
 
     <!--  styles that are used when the cells are in edit mode  -->
 
@@ -59,12 +61,21 @@
 
     <!--  age column  -->
     <DataTemplate x:Key="AgeColumnTemplate">
-      <TextBlock Style="{StaticResource AgeTextBlockStyle}" Text="{Binding Path=Age}" />
+      <TextBlock Style="{StaticResource AgeTextBlockStyle}" Text="{Binding Path=Age, Converter={StaticResource NullToDashConverter}}" />
     </DataTemplate>
 
-    <!--  birth date column  -->
+    <!--  living/deceased checkbox column  -->
+    <DataTemplate x:Key="IsLivingColumnTemplate">
+      <CheckBox
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                IsChecked="{Binding Path=IsLiving, Mode=TwoWay}"
+                Foreground="{DynamicResource FamilyDataFontColor}" />
+    </DataTemplate>
+
+    <!--  birth date column - shows year or full date, editable  -->
     <DataTemplate x:Key="BirthDateColumnTemplate">
-      <TextBox Style="{StaticResource TextBoxStyle}" Text="{Binding Path=BirthDate, Converter={StaticResource DateFormattingConverter}}" />
+      <TextBox Style="{StaticResource TextBoxStyle}" Text="{Binding Path=BirthDate, Converter={StaticResource YearOrDateConverter}}" />
     </DataTemplate>
 
     <!--  birth place column  -->
@@ -72,9 +83,9 @@
       <TextBox Style="{StaticResource TextBoxStyle}" Text="{Binding Path=BirthPlace}" />
     </DataTemplate>
 
-    <!--  death date column  -->
+    <!--  death date column - shows year or full date, editable  -->
     <DataTemplate x:Key="DeathDateColumnTemplate">
-      <TextBox Style="{StaticResource TextBoxStyle}" Text="{Binding Path=DeathDate, Converter={StaticResource DateFormattingConverter}}" />
+      <TextBox Style="{StaticResource TextBoxStyle}" Text="{Binding Path=DeathDate, Converter={StaticResource YearOrDateConverter}}" />
     </DataTemplate>
 
     <!--  death place column  -->
@@ -349,13 +360,15 @@
                         Grid.Column="0"
                         Margin="5,5,0,20"
                         Padding="6"
-                        Background="#90ffffff"
+                        Background="{DynamicResource InputBackgroundBrush}"
+                        BorderBrush="{DynamicResource BorderBrush}"
+                        BorderThickness="1"
                         CornerRadius="4">
             <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
               <Label
                                 Margin="0,0,10,0"
                                 Content="Filter"
-                                Foreground="#FF1F3066" />
+                                Foreground="{DynamicResource FontColor}" />
               <local:FilterText
                                 x:Name="FilterTextBox"
                                 Width="200"
@@ -367,7 +380,7 @@
                                 VerticalAlignment="Center"
                                 Content="{Binding Path=Items.Count, ElementName=FamilyEditor}"
                                 FontSize="16"
-                                Foreground="#FFCCCCCC" />
+                                Foreground="{DynamicResource AlternateFontColor}" />
             </StackPanel>
           </Border>
 
@@ -419,6 +432,14 @@
                                         Header="Age"
                                         HeaderContainerStyle="{DynamicResource FamilyDataGridViewColumnHeader}"
                                         SortProperty="Age"
+                                        SortStyle="FamilyDataGridViewColumnHeader" />
+
+                  <familyData:SortListViewColumn
+                                        Width="60"
+                                        CellTemplate="{StaticResource IsLivingColumnTemplate}"
+                                        Header="Living"
+                                        HeaderContainerStyle="{DynamicResource FamilyDataGridViewColumnHeader}"
+                                        SortProperty="IsLiving"
                                         SortStyle="FamilyDataGridViewColumnHeader" />
 
                   <familyData:SortListViewColumn

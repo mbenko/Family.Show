@@ -191,6 +191,8 @@
     <None Include="FamilyShow.cd" />
     <BaseApplicationManifest Include="Properties\app.manifest" />
     <None Include="FamilyShow_TemporaryKey.pfx" />
+    <None Include="FAMILY_LIST_AGE_AND_STYLING.md" />
+    <None Include="FAMILY_LIST_DATE_CONTROLS.md" />
     <None Include="MENU_POPUP_FIX.md" />
     <None Include="MENU_REORGANIZATION.md" />
     <None Include="Properties\Settings.settings">
