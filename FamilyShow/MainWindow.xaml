@@ -149,41 +149,69 @@
                 Margin="5,0,0,0"
                 VerticalAlignment="Bottom"
                 Style="{DynamicResource MenuStyle}">
+        <!-- File Menu -->
         <MenuItem
-                    x:Name="NewMenu"
-                    Command="New"
-                    Header="_New"
-                    Style="{DynamicResource MenuItemStyle}" />
-        <MenuItem
-                    x:Name="OpenMenu"
-                    Header="_Open"
-                    Style="{DynamicResource MenuItemStyle}" />
-        <MenuItem
-                    x:Name="SaveMenu"
-                    Header="_Save"
+                    x:Name="FileMenu"
+                    Header="_File"
                     Style="{DynamicResource MenuItemStyle}">
-          <MenuItem Command="Save" Header="Save" />
-          <MenuItem Command="SaveAs" Header="Save As..." />
-          <MenuItem Command="local:MainWindow.ExportXpsCommand" Header="Save to XPS..." />
-          <MenuItem Command="Print" Header="Print"/>
-                </MenuItem>
-        <MenuItem
-                    x:Name="GedcomMenu"
-                    Header="_GEDCOM"
-                    Style="{DynamicResource MenuItemStyle}">
-          <MenuItem Command="local:MainWindow.ImportGedcomCommand" Header="Import..." />
-          <MenuItem Command="local:MainWindow.ExportGedcomCommand" Header="Export..." />
-          <MenuItem Command="local:MainWindow.WhatIsGedcomCommand" Header="What is GEDCOM?" />
+          <MenuItem Command="New" Header="_New" InputGestureText="Ctrl+N" />
+          <MenuItem
+                        x:Name="OpenMenu"
+                        Header="_Open"
+                        InputGestureText="Ctrl+O" />
+          <Separator />
+          <MenuItem Command="Save" Header="_Save" InputGestureText="Ctrl+S" />
+          <MenuItem Command="SaveAs" Header="Save _As..." />
+          <Separator />
+          <MenuItem Command="Print" Header="_Print..." InputGestureText="Ctrl+P" />
+          <Separator />
+          <MenuItem x:Name="ExitMenu" Header="E_xit" InputGestureText="Alt+F4" Click="Exit_Click" />
         </MenuItem>
+
+        <!-- Edit Menu -->
         <MenuItem
-                    x:Name="SkinsMenu"
-                    Header="S_kins"
-                    Style="{DynamicResource MenuItemStyle}" />
-        <MenuItem
-                    x:Name="ExportsMenu"
-                    Header="Exports"
+                    x:Name="EditMenu"
+                    Header="_Edit"
                     Style="{DynamicResource MenuItemStyle}">
-          <MenuItem Command="local:MainWindow.ExportBirthCommand" Header="Exporter Naissance..." />
+          <MenuItem Header="_Undo" Command="ApplicationCommands.Undo" InputGestureText="Ctrl+Z" IsEnabled="False" />
+          <MenuItem Header="_Redo" Command="ApplicationCommands.Redo" InputGestureText="Ctrl+Y" IsEnabled="False" />
+          <Separator />
+          <MenuItem Header="Cu_t" Command="ApplicationCommands.Cut" InputGestureText="Ctrl+X" IsEnabled="False" />
+          <MenuItem Header="_Copy" Command="ApplicationCommands.Copy" InputGestureText="Ctrl+C" IsEnabled="False" />
+          <MenuItem Header="_Paste" Command="ApplicationCommands.Paste" InputGestureText="Ctrl+V" IsEnabled="False" />
+          <MenuItem Header="_Delete" Command="ApplicationCommands.Delete" InputGestureText="Del" IsEnabled="False" />
+        </MenuItem>
+
+        <!-- Tools Menu -->
+        <MenuItem
+                    x:Name="ToolsMenu"
+                    Header="_Tools"
+                    Style="{DynamicResource MenuItemStyle}">
+          <MenuItem Header="Import _GEDCOM..." Command="local:MainWindow.ImportGedcomCommand" />
+          <MenuItem Header="_Export GEDCOM..." Command="local:MainWindow.ExportGedcomCommand" />
+          <Separator />
+          <MenuItem Header="Export to _XPS..." Command="local:MainWindow.ExportXpsCommand" />
+          <MenuItem Header="Export _Birth..." Command="local:MainWindow.ExportBirthCommand" />
+        </MenuItem>
+
+        <!-- View Menu -->
+        <MenuItem
+                    x:Name="ViewMenu"
+                    Header="_View"
+                    Style="{DynamicResource MenuItemStyle}">
+          <MenuItem
+                        x:Name="SkinsMenu"
+                        Header="S_kins" />
+        </MenuItem>
+
+        <!-- Help Menu -->
+        <MenuItem
+                    x:Name="HelpMenu"
+                    Header="_Help"
+                    Style="{DynamicResource MenuItemStyle}">
+          <MenuItem Command="local:MainWindow.WhatIsGedcomCommand" Header="What is _GEDCOM?" />
+          <Separator />
+          <MenuItem x:Name="AboutMenu" Header="_About Family.Show" Click="About_Click" />
         </MenuItem>
       </Menu>
     </Border>

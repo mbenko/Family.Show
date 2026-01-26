@@ -185,14 +185,15 @@
     <GradientStop Offset="1" Color="#FF221E1F" />
   </LinearGradientBrush>
 
-  <SolidColorBrush x:Key="PopupMenuBackgroundBrush" Color="#FF000000" />
-
   <LinearGradientBrush x:Key="MenuIsHighlightedBrush" StartPoint="0.5,0.999996" EndPoint="0.5,4.37507e-006">
     <GradientStop Offset="0" Color="#FF4C4D4F" />
     <GradientStop Offset="0.0280899" Color="#FF4C4D4F" />
     <GradientStop Offset="0.775281" Color="#FF221E1F" />
     <GradientStop Offset="1" Color="#FF221E1F" />
   </LinearGradientBrush>
+
+  <!--  PopupMenuBackgroundBrush - Dark gray background for menu dropdowns so white text is readable  -->
+  <SolidColorBrush x:Key="PopupMenuBackgroundBrush" Color="#FF2B2B2B" />
 
   <SolidColorBrush x:Key="ListViewFontColor" Color="#FFFA6E15" />
 
@@ -927,6 +928,7 @@
               <Setter Property="DockPanel.Dock" Value="Top" />
               <Setter Property="Padding" Value="0,2,0,2" />
               <Setter Property="Grid.IsSharedSizeScope" Value="true" />
+              <Setter Property="Foreground" Value="#FFFFFFFF" />
             </Trigger>
 
             <!--  Role = SubMenuItem : this is a child menu item which has children  -->
@@ -934,6 +936,7 @@
               <Setter Property="DockPanel.Dock" Value="Top" />
               <Setter Property="Padding" Value="0,2,0,2" />
               <Setter TargetName="ArrowPanel" Property="Visibility" Value="Collapsed" />
+              <Setter Property="Foreground" Value="#FFFFFFFF" />
             </Trigger>
             <Trigger Property="IsSuspendingPopupAnimation" Value="true">
               <Setter TargetName="SubMenuPopup" Property="PopupAnimation" Value="None" />
@@ -945,10 +948,10 @@
               <Setter TargetName="SubMenuBorder" Property="BitmapEffect" Value="{DynamicResource PopupDropShadow}" />
             </Trigger>
 
-            <!--  Using the system colors for the Menu Highlight and IsEnabled  -->
+            <!--  Menu Highlight - use white text on dark highlight background for readability  -->
             <Trigger Property="IsHighlighted" Value="true">
               <Setter TargetName="Border" Property="Background" Value="{DynamicResource MenuIsHighlightedBrush}" />
-              <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}" />
+              <Setter Property="Foreground" Value="#FFFFFFFF" />
               <Setter TargetName="Border" Property="BorderBrush" Value="#FF000000" />
             </Trigger>
 

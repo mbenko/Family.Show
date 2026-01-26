@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="12.0">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -82,7 +82,7 @@
     <StartupObject>FamilyShow.App</StartupObject>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>6D40D6C598251B9F5D88EBCC11D2CB8075737955</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>B823468A623866F0EE5BADFDACB2579194FA6C9D</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
     <ManifestKeyFile>FamilyShow_TemporaryKey.pfx</ManifestKeyFile>
@@ -187,14 +187,19 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <None Include="app.config" />
+    <None Include="CERTIFICATE_INFO.md" />
     <None Include="FamilyShow.cd" />
     <BaseApplicationManifest Include="Properties\app.manifest" />
     <None Include="FamilyShow_TemporaryKey.pfx" />
+    <None Include="MENU_POPUP_FIX.md" />
+    <None Include="MENU_REORGANIZATION.md" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <None Include="Sample Files\Kennedy.ged" />
+    <None Include="SAVE_DIALOG_ENHANCEMENT.md" />
+    <None Include="SUBMENU_READABILITY_FIX.md" />
     <Resource Include="Sample Files\Stories\Camilla Shand.rtf" />
     <Resource Include="Sample Files\Stories\Charles Philip Arthur Windsor {I11}.rtf" />
     <Resource Include="Sample Files\Stories\Diana Frances Spencer {I12}.rtf" />

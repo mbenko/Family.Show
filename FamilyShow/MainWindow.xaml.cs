@@ -259,7 +259,11 @@ namespace FamilyShow
     /// </summary>
     private void OpenFamily(object sender, RoutedEventArgs e)
     {
-      PromptToSave();
+      bool canceled = PromptToSave();
+      if (canceled)
+      {
+        return; // User canceled, don't open a new file
+      }
 
       CommonDialog dialog = new CommonDialog
       {
@@ -323,7 +327,11 @@ namespace FamilyShow
 
       if (!string.IsNullOrEmpty(file))
       {
-        PromptToSave();
+        bool canceled = PromptToSave();
+        if (canceled)
+        {
+          return; // User canceled, don't open the recent file
+        }
 
         LoadFamily(file);
 
@@ -454,7 +462,11 @@ namespace FamilyShow
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
     private void ImportGedcom(object sender, EventArgs e)
     {
-      PromptToSave();
+      bool canceled = PromptToSave();
+      if (canceled)
+      {
+        return; // User canceled, don't import
+      }
 
       CommonDialog dialog = new CommonDialog
       {
@@ -757,38 +769,38 @@ namespace FamilyShow
         DetailsControl.DataContext = family.Current;
       }
 
-      DetailsPane.Visibility = Visibility.Visible;
-      DetailsControl.SetDefaultFocus();
+        DetailsPane.Visibility = Visibility.Visible;
+        DetailsControl.SetDefaultFocus();
 
-      HideNewUserControl();
-      HideWelcomeScreen();
+        HideNewUserControl();
+        HideWelcomeScreen();
 
-      NewMenu.IsEnabled = true;
-      OpenMenu.IsEnabled = true;
-      SaveMenu.IsEnabled = true;
-      GedcomMenu.IsEnabled = true;
-      SkinsMenu.IsEnabled = true;
-    }
+        FileMenu.IsEnabled = true;
+        EditMenu.IsEnabled = true;
+        ToolsMenu.IsEnabled = true;
+        ViewMenu.IsEnabled = true;
+        HelpMenu.IsEnabled = true;
+      }
 
     /// <summary>
     /// Hides the details pane
     /// </summary>
     private void HideDetailsPane()
     {
-      DetailsPane.Visibility = Visibility.Collapsed;
+        DetailsPane.Visibility = Visibility.Collapsed;
 
-      // Remove the cloned columns from layers 0
-      if (DiagramPane.ColumnDefinitions.Contains(column1CloneForLayer0))
-      {
-        DiagramPane.ColumnDefinitions.Remove(column1CloneForLayer0);
+        // Remove the cloned columns from layers 0
+        if (DiagramPane.ColumnDefinitions.Contains(column1CloneForLayer0))
+        {
+          DiagramPane.ColumnDefinitions.Remove(column1CloneForLayer0);
+        }
+
+        FileMenu.IsEnabled = false;
+        EditMenu.IsEnabled = false;
+        ToolsMenu.IsEnabled = false;
+        ViewMenu.IsEnabled = false;
+        HelpMenu.IsEnabled = false;
       }
-
-      NewMenu.IsEnabled = false;
-      OpenMenu.IsEnabled = false;
-      SaveMenu.IsEnabled = false;
-      GedcomMenu.IsEnabled = false;
-      SkinsMenu.IsEnabled = false;
-    }
 
     /// <summary>
     /// Hide the family data control
@@ -927,21 +939,32 @@ namespace FamilyShow
     protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
     {
       // Make sure the file is saved before the app is closed.
-      PromptToSave();
+      bool shouldCancel = PromptToSave();
+      if (shouldCancel)
+      {
+        e.Cancel = true;
+        return;
+      }
       base.OnClosing(e);
     }
 
     /// <summary>
     /// Prompts the user to save the current family if it has been changed
     /// </summary>
-    private void PromptToSave()
+    /// <returns>True if the operation should be canceled, false otherwise</returns>
+    private bool PromptToSave()
     {
       if (!family.IsDirty)
       {
-        return;
+        return false;
       }
 
-      MessageBoxResult result = MessageBox.Show(Properties.Resources.NotSavedMessage, Properties.Resources.NotSaved, MessageBoxButton.YesNo, MessageBoxImage.Warning);
+      MessageBoxResult result = MessageBox.Show(Properties.Resources.NotSavedMessage, Properties.Resources.NotSaved, MessageBoxButton.YesNoCancel, MessageBoxImage.Warning);
+
+      if (result == MessageBoxResult.Cancel)
+      {
+        return true; // Cancel the operation
+      }
 
       if (result == MessageBoxResult.Yes)
       {
@@ -954,6 +977,14 @@ namespace FamilyShow
         dialog.Filter.Add(new FilterEntry(Properties.Resources.AllFiles, Properties.Resources.AllExtension));
         dialog.Title = Properties.Resources.SaveAs;
         dialog.DefaultExtension = Properties.Resources.DefaultFamilyExtension;
+
+        // Set default filename to current file if it exists and is not a new tree
+        if (!string.IsNullOrEmpty(familyCollection.FullyQualifiedFilename) && 
+            File.Exists(familyCollection.FullyQualifiedFilename))
+        {
+          dialog.FileName = familyCollection.FullyQualifiedFilename;
+        }
+
         dialog.ShowSave();
 
         if (!string.IsNullOrEmpty(dialog.FileName))
@@ -966,7 +997,14 @@ namespace FamilyShow
             BuildOpenMenu();
           }
         }
+        else
+        {
+          // User canceled the save dialog, so cancel the operation
+          return true;
+        }
       }
+
+      return false; // Don't cancel the operation
     }
 
     /// <summary>
@@ -994,6 +1032,29 @@ namespace FamilyShow
       }
 
       return new DateTime();
+    }
+
+    /// <summary>
+    /// Handler for Exit menu item
+    /// </summary>
+    private void Exit_Click(object sender, RoutedEventArgs e)
+    {
+      Application.Current.Shutdown();
+    }
+
+    /// <summary>
+    /// Handler for About menu item
+    /// </summary>
+    private void About_Click(object sender, RoutedEventArgs e)
+    {
+      MessageBox.Show(this, 
+        "Family.Show - A Genealogy Application\n\n" +
+        "Version: 4.0\n" +
+        "Framework: .NET Framework 4.8\n\n" +
+        "A collaborative family tree and genealogy application.",
+        "About Family.Show", 
+        MessageBoxButton.OK, 
+        MessageBoxImage.Information);
     }
 
         #endregion

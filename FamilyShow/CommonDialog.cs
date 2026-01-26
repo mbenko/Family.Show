@@ -76,6 +76,14 @@ namespace FamilyShow
     public string FileName
     {
       get { return openFileName.file; }
+      set
+      {
+        // Set the initial filename - need to ensure it fits in the buffer
+        if (!string.IsNullOrEmpty(value))
+        {
+          openFileName.file = value.PadRight(260, '\0');
+        }
+      }
     }
 
     #endregion
