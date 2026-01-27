@@ -1,0 +1,29 @@
+@page
+@model FamilyShowWeb.Pages.ClearCacheModel
+@{
+    ViewData["Title"] = "Cache Cleared";
+}
+
+<div class="text-center">
+    <h2>Cache and Cookies Cleared</h2>
+    <p>All browser cache, cookies, and session data have been cleared.</p>
+    <p><a href="/">Return to Home</a></p>
+</div>
+
+<script>
+    // Clear all browser storage
+    if (typeof(Storage) !== "undefined") {
+        localStorage.clear();
+        sessionStorage.clear();
+    }
+    
+    // Clear all cookies for this domain
+    document.cookie.split(";").forEach(function(c) { 
+        document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); 
+    });
+    
+    // Force reload without cache
+    if (window.location.search !== '?nocache=1') {
+        window.location.href = window.location.pathname + '?nocache=1';
+    }
+</script>

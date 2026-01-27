@@ -1,0 +1,64 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Family Tree Explorer";
+}
+
+<div class="welcome-section text-center">
+    <h1 class="display-4">Welcome to FamilyShow</h1>
+    <p class="lead">Explore and visualize your family tree</p>
+</div>
+
+<div class="upload-form">
+    <h2 class="mb-4">Upload Your Family File</h2>
+    <p class="text-muted mb-3">Select a .familyx file to view and interact with your family tree</p>
+
+    <form method="post" enctype="multipart/form-data" asp-page-handler="Upload">
+        <div class="mb-3">
+            <label for="FamilyFile" class="form-label">Family File (.familyx)</label>
+            <input type="file" class="form-control" name="FamilyFile" id="FamilyFile" accept=".familyx" required />
+        </div>
+        <button type="submit" class="btn btn-primary btn-lg w-100">
+            <i class="bi bi-upload"></i> Upload and View Tree
+        </button>
+    </form>
+
+    @if (!string.IsNullOrEmpty(Model.Message))
+    {
+        var messageClass = Model.Message.Contains("Failed") || Model.Message.Contains("error") ? "message error" : "message";
+        <div class="@messageClass">
+            @Model.Message
+        </div>
+    }
+</div>
+
+@if (Model.LoadedFamily != null && Model.LoadedFamily.PeopleCollection.Count > 0)
+{
+    <div class="card mt-4">
+        <div class="card-header">
+            <h3 class="mb-0">Family Members (@Model.LoadedFamily.PeopleCollection.Count)</h3>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                @foreach (var person in Model.LoadedFamily.PeopleCollection.Take(10))
+                {
+                    <div class="col-md-6 col-lg-4 mb-2">
+                        <div class="p-2" style="border-left: 3px solid #007bff;">
+                            <strong>@person.FullName</strong>
+                            @if (person.BirthDate.HasValue)
+                            {
+                                <div class="text-muted small">Born: @person.BirthDate.Value.ToShortDateString()</div>
+                            }
+                        </div>
+                    </div>
+                }
+                @if (Model.LoadedFamily.PeopleCollection.Count > 10)
+                {
+                    <div class="col-12 text-center text-muted">
+                        <small>... and @(Model.LoadedFamily.PeopleCollection.Count - 10) more</small>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+}

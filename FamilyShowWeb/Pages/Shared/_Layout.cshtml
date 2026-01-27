@@ -1,0 +1,74 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - FamilyShowWeb</title>
+    <script type="importmap"></script>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/FamilyShowWeb.styles.css" asp-append-version="true" />
+</head>
+<body>
+    <header class="wpf-header">
+        <div class="app-title">Family.Show</div>
+        <nav class="wpf-menubar">
+            <ul class="menu-list">
+                <li class="menu-item dropdown">
+                    <a href="#" class="menu-link dropdown-toggle" data-bs-toggle="dropdown">File</a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" asp-page="/Index"><i class="bi bi-folder-open"></i> Open...</a></li>
+                        <li><a class="dropdown-item" href="#"><i class="bi bi-save"></i> Save</a></li>
+                        <li><a class="dropdown-item" href="#"><i class="bi bi-save-fill"></i> Save As...</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="#"><i class="bi bi-file-earmark-arrow-down"></i> Import...</a></li>
+                        <li><a class="dropdown-item" href="#"><i class="bi bi-file-earmark-arrow-up"></i> Export...</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="#"><i class="bi bi-box-arrow-right"></i> Exit</a></li>
+                    </ul>
+                </li>
+                <li class="menu-item dropdown">
+                    <a href="#" class="menu-link dropdown-toggle" data-bs-toggle="dropdown">Edit</a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#" onclick="showAddPersonDialog()"><i class="bi bi-person-plus"></i> Add Person...</a></li>
+                        <li><a class="dropdown-item" href="#"><i class="bi bi-pencil"></i> Edit Person...</a></li>
+                        <li><a class="dropdown-item" href="#"><i class="bi bi-trash"></i> Delete Person...</a></li>
+                    </ul>
+                </li>
+                <li class="menu-item dropdown">
+                    <a href="#" class="menu-link dropdown-toggle" data-bs-toggle="dropdown">Tools</a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#"><i class="bi bi-diagram-3"></i> Show Family Data</a></li>
+                        <li><a class="dropdown-item" href="#"><i class="bi bi-search"></i> Search...</a></li>
+                    </ul>
+                </li>
+                <li class="menu-item dropdown">
+                    <a href="#" class="menu-link dropdown-toggle" data-bs-toggle="dropdown">View</a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#" onclick="toggleDetailsPanel()"><i class="bi bi-layout-sidebar-reverse"></i> Person Details</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="showFullTree()"><i class="bi bi-diagram-2"></i> Full Tree</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="#"><i class="bi bi-zoom-in"></i> Zoom In</a></li>
+                        <li><a class="dropdown-item" href="#"><i class="bi bi-zoom-out"></i> Zoom Out</a></li>
+                    </ul>
+                </li>
+                <li class="menu-item dropdown">
+                    <a href="#" class="menu-link dropdown-toggle" data-bs-toggle="dropdown">Help</a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" asp-page="/Privacy"><i class="bi bi-info-circle"></i> About</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+    </header>
+    <div class="main-container">
+        @RenderBody()
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
