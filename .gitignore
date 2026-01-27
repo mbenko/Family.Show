@@ -22,6 +22,7 @@ bld/
 [Oo]bj/
 [Ll]og/
 .temp
+packages
 
 # Visual Studio 2015 cache/options directory
 .vs/
