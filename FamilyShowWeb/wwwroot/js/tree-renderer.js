@@ -163,6 +163,59 @@ function getEnhancedCytoscapeStyle() {
             }
         },
         {
+            selector: 'node.sibling',
+            style: {
+                'border-color': '#FFD700',  // Yellow/gold for siblings
+                'border-width': '3px'
+            }
+        },
+        {
+            selector: 'node.primary',
+            style: {
+                'border-color': '#FF6B35',  // Orange for primary
+                'border-width': '3px',
+                'width': '55px',
+                'height': '80px',
+                'z-index': 90
+            }
+        },
+        {
+            selector: 'node.spouse',
+            style: {
+                'border-color': '#fd7e14'  // Orange for spouse
+            }
+        },
+        {
+            selector: 'node.parent',
+            style: {
+                'border-color': '#28a745'  // Green for parents
+            }
+        },
+        {
+            selector: 'node.child',
+            style: {
+                'border-color': '#6f42c1'  // Purple for children
+            }
+        },
+        {
+            selector: 'node.ancestor',
+            style: {
+                'border-color': '#17a2b8',  // Cyan for ancestors
+                'width': '45px',
+                'height': '65px',
+                'font-size': '10px'
+            }
+        },
+        {
+            selector: 'node.descendant',
+            style: {
+                'border-color': '#6610f2',  // Indigo for descendants
+                'width': '45px',
+                'height': '65px',
+                'font-size': '10px'
+            }
+        },
+        {
             selector: 'node:selected',
             style: {
                 'border-width': '3px',
@@ -198,9 +251,11 @@ function getEnhancedCytoscapeStyle() {
             style: {
                 'line-color': '#fd7e14',
                 'target-arrow-shape': 'none',
-                'line-style': 'dashed',
-                'line-dash-pattern': [6, 3],
-                'width': 2
+                'curve-style': 'unbundled-bezier',  // Arc curve for spouses
+                'control-point-distances': [40],     // Control the arc height
+                'control-point-weights': [0.5],      // Position control point at midpoint
+                'line-style': 'solid',
+                'width': 3
             }
         },
         {

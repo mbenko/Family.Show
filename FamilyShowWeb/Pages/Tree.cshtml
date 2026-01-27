@@ -176,6 +176,7 @@
             <script src="https://unpkg.com/dagre@0.8.5/dist/dagre.min.js"></script>
             <script src="https://unpkg.com/cytoscape@3.24.0/dist/cytoscape.min.js"></script>
             <script src="https://unpkg.com/cytoscape-dagre@2.4.0/cytoscape-dagre.js"></script>
+            <script src="~/js/family-tree-layout.js" asp-append-version="true"></script>
             <script src="~/js/tree-renderer.js" asp-append-version="true"></script>
             <script>
             console.log('=== Tree.cshtml Script Starting ===');
@@ -476,108 +477,37 @@
         
         function focusOnPerson(personId) {
             if (!personId) return;
-            
+
+            console.log('Focusing on person:', personId);
             currentFocusId = personId;
             var person = familyData.PeopleCollection.find(p => p.Id === personId);
             if (!person) return;
-            
-            // Get related people
-            var relatedIds = new Set([personId]);
-            var ancestors = [];
-            var descendants = [];
-            var spouses = [];
-            var siblings = [];
-            
-            // Add ancestors (2 generations up)
-            var parents = getParents(person);
-            parents.forEach(parent => {
-                relatedIds.add(parent.PersonId);
-                ancestors.push(parent.PersonId);
-                // Grandparents
-                var grandparent = familyData.PeopleCollection.find(p => p.Id === parent.PersonId);
-                if (grandparent) {
-                    var grandparents = getParents(grandparent);
-                    grandparents.forEach(gp => {
-                        relatedIds.add(gp.PersonId);
-                        ancestors.push(gp.PersonId);
-                    });
-                }
-            });
-            
-            // Add descendants (2 generations down)
-            var children = getChildren(person);
-            children.forEach(child => {
-                relatedIds.add(child.PersonId);
-                descendants.push(child.PersonId);
-                // Grandchildren
-                var grandchild = familyData.PeopleCollection.find(p => p.Id === child.PersonId);
-                if (grandchild) {
-                    var grandchildren = getChildren(grandchild);
-                    grandchildren.forEach(gc => {
-                        relatedIds.add(gc.PersonId);
-                        descendants.push(gc.PersonId);
-                    });
-                }
-            });
-            
-            // Add spouses
-            var spouseRels = getSpouses(person);
-            spouseRels.forEach(spouse => {
-                relatedIds.add(spouse.PersonId);
-                spouses.push(spouse.PersonId);
-            });
-            
-            // Add siblings
-            var siblingRels = getSiblings(person);
-            siblingRels.forEach(sibling => {
-                relatedIds.add(sibling.PersonId);
-                siblings.push(sibling.PersonId);
-            });
-            
-            // Clear and rebuild the graph with only related people
+
+            // Use custom family tree layout
+            const treeLayout = new FamilyTreeLayout(familyData);
+            const { nodes, edges } = treeLayout.calculateLayout(personId);
+
+            console.log('Custom layout generated:', nodes.length, 'nodes,', edges.length, 'edges');
+
+            // Clear and rebuild the graph
             cy.elements().remove();
-            
-            var focusedNodes = allNodes.filter(node => relatedIds.has(node.data.id));
-            var focusedEdges = allEdges.filter(edge => 
-                relatedIds.has(edge.data.source) && relatedIds.has(edge.data.target));
-            
-            cy.add(focusedNodes);
-            cy.add(focusedEdges);
-            
-            // Apply styling classes
-            cy.getElementById(personId).addClass('focused');
-            ancestors.forEach(id => cy.getElementById(id).addClass('ancestor'));
-            descendants.forEach(id => cy.getElementById(id).addClass('descendant'));
-            spouses.forEach(id => cy.getElementById(id).addClass('spouse'));
-            siblings.forEach(id => cy.getElementById(id).addClass('sibling'));
+            cy.add(nodes);
+            cy.add(edges);
 
-            // Layout and center on focused person
-            var layout = cy.layout({ 
-                name: 'dagre', 
-                directed: true, 
-                padding: 30,
-                rankDir: 'TB',
-                ranker: 'longest-path',
-                spacingFactor: 1.5,
-                animate: true,
-                animationDuration: 500
-            });
-
-            layout.on('layoutstop', function() {
-                // Apply SVG rendering after layout
-                if (window.TreeRenderer && window.TreeRenderer.applySVGToAllNodes) {
+            // Apply SVG rendering after adding nodes
+            if (window.TreeRenderer && window.TreeRenderer.applySVGToAllNodes) {
+                setTimeout(() => {
                     window.TreeRenderer.applySVGToAllNodes(cy, familyData);
-                }
-            });
+                }, 100);
+            }
 
-            layout.run();
-
-            // Center on the focused person after layout
+            // Fit the view to show all nodes
             setTimeout(() => {
-                cy.center(cy.getElementById(personId));
-                cy.fit(cy.getElementById(personId), 50);
-            }, 600);
-            
+                cy.fit(50);
+                cy.center();
+            }, 200);
+
+            updateTreeStats();
             updateTreeStats();
         }
 
