@@ -127,24 +127,103 @@ function populateListView(peopleCollection) {
             return date.toLocaleDateString();
         };
 
-        const isLiving = !person.DeathDate || new Date(person.DeathDate).getFullYear() < 1800;
+                const isLiving = !person.DeathDate || new Date(person.DeathDate).getFullYear() < 1800;
 
-        tr.innerHTML = `
-            <td>${person.FirstName || '-'}</td>
-            <td>${person.LastName || '-'}</td>
-            <td>${age}</td>
-            <td><input type="checkbox" ${isLiving ? 'checked' : ''} disabled></td>
-            <td>${formatDate(person.BirthDate)}</td>
-            <td>${person.BirthPlace || '-'}</td>
-            <td>${formatDate(person.DeathDate)}</td>
-            <td>${person.DeathPlace || '-'}</td>
-        `;
+                // Photo icon
+                const photoIcon = person.PhotoCount > 0 ? '📷' : '';
 
-        tbody.appendChild(tr);
-    });
+                tr.innerHTML = `
+                    <td style="text-align: center;">${photoIcon}</td>
+                    <td>${person.FirstName || '-'}</td>
+                    <td>${person.LastName || '-'}</td>
+                    <td>${age}</td>
+                    <td><input type="checkbox" ${isLiving ? 'checked' : ''} disabled></td>
+                    <td>${formatDate(person.BirthDate)}</td>
+                    <td>${person.BirthPlace || '-'}</td>
+                    <td>${formatDate(person.DeathDate)}</td>
+                    <td>${person.DeathPlace || '-'}</td>
+                `;
 
-    console.log('List view population complete');
-}
+                tbody.appendChild(tr);
+            });
+
+            console.log('List view population complete');
+        }
+
+        // Sort list view
+        let currentSortColumn = 'firstName';
+        let currentSortDirection = 'asc';
+
+        function sortList(column) {
+            console.log('Sorting by:', column, 'Current direction:', currentSortDirection);
+
+            // Toggle direction if same column
+            if (currentSortColumn === column) {
+                currentSortDirection = currentSortDirection === 'asc' ? 'desc' : 'asc';
+            } else {
+                currentSortColumn = column;
+                currentSortDirection = 'asc';
+            }
+
+            // Sort the data
+            const sortedData = [...allPeopleData].sort((a, b) => {
+                let aVal, bVal;
+
+                switch(column) {
+                    case 'firstName':
+                        aVal = (a.FirstName || '').toLowerCase();
+                        bVal = (b.FirstName || '').toLowerCase();
+                        break;
+                    case 'lastName':
+                        aVal = (a.LastName || '').toLowerCase();
+                        bVal = (b.LastName || '').toLowerCase();
+                        break;
+                    case 'age':
+                        // Calculate age for sorting
+                        aVal = calculateAge(a.BirthDate, a.DeathDate);
+                        bVal = calculateAge(b.BirthDate, b.DeathDate);
+                        break;
+                    case 'birthDate':
+                        aVal = a.BirthDate ? new Date(a.BirthDate).getTime() : 0;
+                        bVal = b.BirthDate ? new Date(b.BirthDate).getTime() : 0;
+                        break;
+                    case 'photos':
+                        aVal = a.PhotoCount || 0;
+                        bVal = b.PhotoCount || 0;
+                        break;
+                    default:
+                        return 0;
+                }
+
+                if (currentSortDirection === 'asc') {
+                    return aVal < bVal ? -1 : aVal > bVal ? 1 : 0;
+                } else {
+                    return aVal > bVal ? -1 : aVal < bVal ? 1 : 0;
+                }
+            });
+
+            // Update sort indicators
+            document.querySelectorAll('.sort-indicator').forEach(indicator => {
+                indicator.textContent = '';
+            });
+            const headerCell = event.target.closest('th');
+            if (headerCell) {
+                const indicator = headerCell.querySelector('.sort-indicator');
+                if (indicator) {
+                    indicator.textContent = currentSortDirection === 'asc' ? ' ▲' : ' ▼';
+                }
+            }
+
+            // Repopulate the list
+            populateListView(sortedData);
+        }
+
+        function calculateAge(birthDate, deathDate) {
+            if (!birthDate) return -1;
+            const birth = new Date(birthDate);
+            const end = deathDate ? new Date(deathDate) : new Date();
+            return Math.floor((end - birth) / (365.25 * 24 * 60 * 60 * 1000));
+        }
 
 // Filter list view
 function filterList() {

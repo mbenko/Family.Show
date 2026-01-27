@@ -77,27 +77,30 @@ public class IndexModel : PageModel
             var contentXmlPath = Path.Combine(extractFolder, "content.xml");
             if (!System.IO.File.Exists(contentXmlPath))
             {
-                Message = "content.xml not found in archive.";
-                return Page();
-            }
+                    Message = "content.xml not found in archive.";
+                    return Page();
+                }
 
-            // Parse and convert content.xml directly
-            try
-            {
-                LoadedFamily = ParseFamilyXml(contentXmlPath);
-                _logger.LogInformation($"Successfully parsed family data with {LoadedFamily.PeopleCollection.Count} people");
-            }
-            catch (Exception parseEx)
-            {
-                _logger.LogError(parseEx, "Failed to parse family XML");
-                Message = $"Failed to parse family file: {parseEx.Message}";
-                return Page();
-            }
+                // Parse and convert content.xml directly
+                Dictionary<string, int> photoCountMap = new Dictionary<string, int>();
+                try
+                {
+                    var (family, photoCount) = ParseFamilyXml(contentXmlPath);
+                    LoadedFamily = family;
+                    photoCountMap = photoCount;
+                    _logger.LogInformation($"Successfully parsed family data with {LoadedFamily.PeopleCollection.Count} people");
+                }
+                catch (Exception parseEx)
+                {
+                    _logger.LogError(parseEx, "Failed to parse family XML");
+                    Message = $"Failed to parse family file: {parseEx.Message}";
+                    return Page();
+                }
 
-            // Store family data in a temporary file instead of session/tempdata
-            var tempDataId = Guid.NewGuid().ToString();
-            var tempDataPath = Path.Combine(Path.GetTempPath(), $"FamilyShow_{tempDataId}.json");
-            
+                // Store family data in a temporary file instead of session/tempdata
+                var tempDataId = Guid.NewGuid().ToString();
+                var tempDataPath = Path.Combine(Path.GetTempPath(), $"FamilyShow_{tempDataId}.json");
+
             // Convert to DTO to avoid circular references
             var familyDto = new FamilyDto
             {
@@ -108,9 +111,11 @@ public class IndexModel : PageModel
                     LastName = person.LastName,
                     FullName = person.FullName ?? $"{person.FirstName} {person.LastName}".Trim(),
                     BirthDate = person.BirthDate,
-                    BirthPlace = string.Empty, // Not available in shared model
-                    DeathDate = null, // Not available in shared model  
-                    DeathPlace = string.Empty, // Not available in shared model
+                    BirthPlace = person.BirthPlace ?? string.Empty,
+                    DeathDate = person.DeathDate,
+                    DeathPlace = person.DeathPlace ?? string.Empty,
+                    Gender = person.Gender.ToString(),
+                    PhotoCount = photoCountMap.ContainsKey(person.Id) ? photoCountMap[person.Id] : 0,
                     Relatives = person.Relatives.Select(rel => new RelativeDto
                     {
                         RelationType = rel.RelationType,
@@ -151,11 +156,12 @@ public class IndexModel : PageModel
         return Page();
     }
 
-    private FamilyShowLib.Shared.People ParseFamilyXml(string contentXmlPath)
+    private (FamilyShowLib.Shared.People, Dictionary<string, int>) ParseFamilyXml(string contentXmlPath)
     {
         _logger.LogInformation($"Starting to parse XML file: {contentXmlPath}");
         var family = new FamilyShowLib.Shared.People();
         var personMap = new Dictionary<string, FamilyShowLib.Shared.Person>();
+        var photoCountMap = new Dictionary<string, int>();
         
         try
         {
@@ -183,7 +189,21 @@ public class IndexModel : PageModel
                             DeathPlace = GetElementValue(personDoc, "DeathPlace"),
                             Gender = ParseGender(GetElementValue(personDoc, "Gender"))
                         };
-                        
+
+                        // Count photos
+                        var photosNode = personDoc.SelectSingleNode("//Photos");
+                        int photoCount = 0;
+                        if (photosNode != null)
+                        {
+                            photoCount = photosNode.ChildNodes.Count;
+                        }
+
+                        // Store photo count temporarily using a dictionary
+                        if (!photoCountMap.ContainsKey(person.Id))
+                        {
+                            photoCountMap[person.Id] = photoCount;
+                        }
+
                         personMap[person.Id] = person;
                         family.PeopleCollection.Add(person);
                         personCount++;
@@ -271,10 +291,10 @@ public class IndexModel : PageModel
             _logger.LogError(ex, "Failed during XML parsing");
             throw;
         }
-        
-        _logger.LogInformation($"XML parsing complete. Family has {family.PeopleCollection.Count} people");
-        return family;
-    }
+
+            _logger.LogInformation($"XML parsing complete. Family has {family.PeopleCollection.Count} people");
+            return (family, photoCountMap);
+        }
     
     private string GetElementValue(System.Xml.XmlDocument doc, string elementName)
     {
@@ -300,11 +320,39 @@ public class IndexModel : PageModel
             if (Enum.TryParse<FamilyShowLib.Shared.Gender>(genderString, true, out var result))
                 return result;
 
-            // Legacy support for "M" and "F"
-            if (genderString.Equals("F", StringComparison.OrdinalIgnoreCase) || 
-                genderString.Equals("Female", StringComparison.OrdinalIgnoreCase))
-                return FamilyShowLib.Shared.Gender.Female;
+                        // Legacy support for "M" and "F"
+                        if (genderString.Equals("F", StringComparison.OrdinalIgnoreCase) || 
+                            genderString.Equals("Female", StringComparison.OrdinalIgnoreCase))
+                            return FamilyShowLib.Shared.Gender.Female;
 
-            return FamilyShowLib.Shared.Gender.Male;
-        }
-    }
+                        return FamilyShowLib.Shared.Gender.Male;
+                    }
+                }
+
+            // DTOs for JSON serialization
+            public class FamilyDto
+            {
+                public List<PersonDto> PeopleCollection { get; set; } = new List<PersonDto>();
+            }
+
+            public class PersonDto
+            {
+                public string Id { get; set; } = string.Empty;
+                public string FirstName { get; set; } = string.Empty;
+                public string LastName { get; set; } = string.Empty;
+                public string FullName { get; set; } = string.Empty;
+                public DateTime? BirthDate { get; set; }
+                public string BirthPlace { get; set; } = string.Empty;
+                public DateTime? DeathDate { get; set; }
+                public string DeathPlace { get; set; } = string.Empty;
+                public string Gender { get; set; } = "Male";
+                public int PhotoCount { get; set; }
+                public List<RelativeDto> Relatives { get; set; } = new List<RelativeDto>();
+            }
+
+            public class RelativeDto
+            {
+                public string RelationType { get; set; } = string.Empty;
+                public string PersonId { get; set; } = string.Empty;
+                public string PersonName { get; set; } = string.Empty;
+            }

@@ -247,6 +247,12 @@ namespace FamilyShowLib
           return null;
         }
 
+        // If person is deceased but we don't have a death date, age is unknown
+        if (!IsLiving && DeathDate == null)
+        {
+          return null;
+        }
+
         // Determine the age of the person based on just the year.
         DateTime startDate = BirthDate.Value;
         DateTime endDate = (IsLiving || DeathDate == null) ? DateTime.Now : DeathDate.Value;

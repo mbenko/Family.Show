@@ -417,6 +417,21 @@ h1, h2, h3, h4, h5, h6 {
   font-size: 0.9rem;
 }
 
+.family-list-table th.sortable {
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.2s;
+}
+
+.family-list-table th.sortable:hover {
+  background-color: #2a2a2a;
+}
+
+.sort-indicator {
+  font-size: 0.7rem;
+  color: var(--accent-color);
+}
+
 .family-list-table tbody tr {
   border-bottom: 1px solid #3a3a3a;
   transition: background-color 0.2s;

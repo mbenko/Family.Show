@@ -25,11 +25,12 @@
                 <table class="family-list-table">
                     <thead>
                         <tr>
-                            <th>First Name</th>
-                            <th>Last Name</th>
-                            <th>Age</th>
+                            <th class="sortable" onclick="sortList('photos')">??</th>
+                            <th class="sortable" onclick="sortList('firstName')">First Name <span class="sort-indicator"></span></th>
+                            <th class="sortable" onclick="sortList('lastName')">Last Name <span class="sort-indicator"></span></th>
+                            <th class="sortable" onclick="sortList('age')">Age <span class="sort-indicator"></span></th>
                             <th>Living</th>
-                            <th>Birth Date</th>
+                            <th class="sortable" onclick="sortList('birthDate')">Birth Date <span class="sort-indicator"></span></th>
                             <th>Birth Place</th>
                             <th>Death Date</th>
                             <th>Death Place</th>
@@ -350,9 +351,14 @@
                 });
             });
             
-            // Populate the focus person dropdown
+            // Populate the focus person dropdown (sorted by name)
             var focusSelect = document.getElementById('focus-person');
-            familyData.PeopleCollection.forEach(function(person) {
+            var sortedPeople = [...familyData.PeopleCollection].sort((a, b) => {
+                const nameA = (a.LastName || '') + ', ' + (a.FirstName || '');
+                const nameB = (b.LastName || '') + ', ' + (b.FirstName || '');
+                return nameA.localeCompare(nameB);
+            });
+            sortedPeople.forEach(function(person) {
                 var option = document.createElement('option');
                 option.value = person.Id;
                 option.text = person.FullName || (person.FirstName + ' ' + person.LastName);
