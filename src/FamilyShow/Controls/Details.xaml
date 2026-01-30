@@ -16,6 +16,10 @@
       <!--  Converter for displaying the the first name with an apostrophe.  -->
       <local:FirstNamePossessiveFormConverter x:Key="FirstNamePossessiveFormConverter" />
 
+      <!--  Converters for showing/hiding photo and story icons  -->
+      <local:HasPhotosConverter x:Key="HasPhotosConverter" />
+      <local:HasStoryConverter x:Key="HasStoryConverter" />
+
       <!--  Converter for showing/hiding features based on boolean property  -->
       <local:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
 
@@ -2247,8 +2251,31 @@
               </familyData:FamilyDisplayListView.ItemContainerStyle>
               <familyData:FamilyDisplayListView.View>
                 <GridView AllowsColumnReorder="False">
+                  <!-- Photo Icon Column -->
+                  <GridViewColumn Width="25">
+                    <GridViewColumn.CellTemplate>
+                      <DataTemplate>
+                        <Path
+                          Width="16"
+                          Height="16"
+                          Data="M12,9A3,3 0 0,0 9,12A3,3 0 0,0 12,15A3,3 0 0,0 15,12A3,3 0 0,0 12,9M12,17A5,5 0 0,1 7,12A5,5 0 0,1 12,7A5,5 0 0,1 17,12A5,5 0 0,1 12,17M12,4.5A7.5,7.5 0 0,0 4.5,12A7.5,7.5 0 0,0 12,19.5A7.5,7.5 0 0,0 19.5,12A7.5,7.5 0 0,0 12,4.5M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M14,6V8L18,8L14,12V10L10,10L14,6Z"
+                          Fill="{DynamicResource FontColor}"
+                          Stretch="Uniform"
+                          Visibility="{Binding Path=., Converter={StaticResource HasPhotosConverter}}"
+                          Cursor="Hand"
+                          AllowDrop="True"
+                          MouseLeftButtonDown="PhotoIcon_Click"
+                          DragEnter="PhotoIcon_DragEnter"
+                          DragOver="PhotoIcon_DragOver"
+                          Drop="PhotoIcon_Drop"
+                          Tag="{Binding}"
+                          ToolTip="Click to view photos or drag image to add" />
+                      </DataTemplate>
+                    </GridViewColumn.CellTemplate>
+                  </GridViewColumn>
+                  <!-- Name Column -->
                   <familyData:SortListViewColumn
-                                        Width="115"
+                                        Width="120"
                                         DisplayMemberBinding="{Binding Path=FullName}"
                                         Header="Name"
                                         HeaderContainerStyle="{DynamicResource NameGridViewColumnHeader}"

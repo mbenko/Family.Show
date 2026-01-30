@@ -118,12 +118,86 @@ namespace FamilyShow
           return value.ToString();
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-          // Age is read-only, no conversion back needed
-          return Binding.DoNothing;
-        }
+                public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+                {
+                  // Age is read-only, no conversion back needed
+                  return Binding.DoNothing;
+                }
 
-        #endregion
-      }
-    }
+                #endregion
+              }
+
+              /// <summary>
+              /// Converter to check if a person has photos attached
+              /// </summary>
+              public class HasPhotosConverter : IValueConverter
+              {
+                #region IValueConverter Members
+
+                public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+                {
+                  if (value is FamilyShowLib.Person person)
+                  {
+                    bool hasPhotos = person.Photos != null && person.Photos.Count > 0;
+                    return hasPhotos ? System.Windows.Visibility.Visible : System.Windows.Visibility.Collapsed;
+                  }
+                  return System.Windows.Visibility.Collapsed;
+                }
+
+                public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+                {
+                  return Binding.DoNothing;
+                }
+
+                #endregion
+              }
+
+              /// <summary>
+              /// Converter to check if a person has a story attached
+              /// </summary>
+              public class HasStoryConverter : IValueConverter
+              {
+                #region IValueConverter Members
+
+                public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+                {
+                  if (value is FamilyShowLib.Person person)
+                  {
+                    bool hasStory = person.Story != null;
+                    return hasStory ? System.Windows.Visibility.Visible : System.Windows.Visibility.Collapsed;
+                  }
+                  return System.Windows.Visibility.Collapsed;
+                }
+
+                public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+                {
+                  return Binding.DoNothing;
+                }
+
+                #endregion
+              }
+
+              /// <summary>
+              /// Converter for boolean to Visibility (true = Visible, false = Collapsed)
+              /// </summary>
+              public class BooleanToVisibilityConverter : IValueConverter
+              {
+                #region IValueConverter Members
+
+                public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+                {
+                  if (value is bool boolValue)
+                  {
+                    return boolValue ? System.Windows.Visibility.Visible : System.Windows.Visibility.Collapsed;
+                  }
+                  return System.Windows.Visibility.Collapsed;
+                }
+
+                public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+                {
+                  return Binding.DoNothing;
+                }
+
+                #endregion
+              }
+            }

@@ -1,5 +1,24 @@
 var builder = WebApplication.CreateBuilder(args);
 
+// Configure WebRootPath to work from any directory
+var webRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+if (!Directory.Exists(webRootPath))
+{
+    // If running from bin folder, try to find wwwroot in parent directories
+    var currentDir = Directory.GetCurrentDirectory();
+    while (!string.IsNullOrEmpty(currentDir))
+    {
+        var testPath = Path.Combine(currentDir, "wwwroot");
+        if (Directory.Exists(testPath))
+        {
+            webRootPath = testPath;
+            break;
+        }
+        currentDir = Directory.GetParent(currentDir)?.FullName;
+    }
+}
+builder.Environment.WebRootPath = webRootPath;
+
 // Increase Kestrel and FormOptions file upload size limit (e.g., 300 MB)
 builder.WebHost.ConfigureKestrel(serverOptions =>
 {
@@ -29,12 +48,13 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+// Enable static files from wwwroot
+app.UseStaticFiles();
+
 app.UseRouting();
 
 app.UseAuthorization();
 
-app.MapStaticAssets();
-app.MapRazorPages()
-   .WithStaticAssets();
+app.MapRazorPages();
 
 app.Run();

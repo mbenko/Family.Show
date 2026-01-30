@@ -198,5 +198,33 @@ namespace FamilyShow.Controls.FamilyData
     {
       FilterTextBox.Text = filter;
     }
+
+    /// <summary>
+    /// Photo icon was clicked - open photo gallery
+    /// </summary>
+    private void PhotoIcon_Click(object sender, RoutedEventArgs e)
+    {
+      if (sender is System.Windows.Shapes.Path path && path.Tag is Person person)
+      {
+        // Open the photo gallery window
+        PhotoGalleryWindow galleryWindow = new PhotoGalleryWindow(person);
+        galleryWindow.Owner = Window.GetWindow(this);
+        galleryWindow.ShowDialog();
+      }
+    }
+
+    /// <summary>
+    /// Story icon was clicked - open story preview
+    /// </summary>
+    private void StoryIcon_Click(object sender, RoutedEventArgs e)
+    {
+      if (sender is System.Windows.Shapes.Path path && path.Tag is Person person)
+      {
+        // Open the story preview window
+        StoryPreviewWindow storyWindow = new StoryPreviewWindow(person);
+        storyWindow.Owner = Window.GetWindow(this);
+        storyWindow.ShowDialog();
+      }
+    }
   }
 }

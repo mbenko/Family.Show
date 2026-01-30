@@ -880,6 +880,96 @@ namespace FamilyShow
       Person person = item as Person;
       return (person.FullName.ToLower().Contains(FilterTextBox1.Text.ToLower()));
     }
+
+    /// <summary>
+    /// Photo icon was clicked in the family list - open photo gallery
+    /// </summary>
+    private void PhotoIcon_Click(object sender, RoutedEventArgs e)
+    {
+      if (sender is System.Windows.Shapes.Path path && path.Tag is Person person)
+      {
+        // Open the photo gallery window
+        PhotoGalleryWindow galleryWindow = new PhotoGalleryWindow(person);
+        galleryWindow.Owner = Window.GetWindow(this);
+        galleryWindow.ShowDialog();
+      }
+    }
+
+    /// <summary>
+    /// Drag enter event for photo icon - show copy cursor for image files
+    /// </summary>
+    private void PhotoIcon_DragEnter(object sender, DragEventArgs e)
+    {
+      if (e.Data.GetDataPresent(DataFormats.FileDrop))
+      {
+        string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+        if (files != null && files.Length > 0)
+        {
+          string ext = System.IO.Path.GetExtension(files[0]).ToLower();
+          if (ext == ".jpg" || ext == ".jpeg" || ext == ".png" || ext == ".gif" || ext == ".bmp")
+          {
+            e.Effects = DragDropEffects.Copy;
+            return;
+          }
+        }
+      }
+      e.Effects = DragDropEffects.None;
+    }
+
+    /// <summary>
+    /// Drag over event for photo icon
+    /// </summary>
+    private void PhotoIcon_DragOver(object sender, DragEventArgs e)
+    {
+      PhotoIcon_DragEnter(sender, e);
+    }
+
+    /// <summary>
+    /// Drop event for photo icon - add photo to person
+    /// </summary>
+    private void PhotoIcon_Drop(object sender, DragEventArgs e)
+    {
+      if (sender is System.Windows.Shapes.Path path && path.Tag is Person person)
+      {
+        if (e.Data.GetDataPresent(DataFormats.FileDrop))
+        {
+          string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+          if (files != null && files.Length > 0)
+          {
+            try
+            {
+              // Add the photo to the person
+              Photo photo = new Photo(files[0]);
+              person.Photos.Add(photo);
+
+              // Refresh the UI to show the icon
+              ICollectionView view = System.Windows.Data.CollectionViewSource.GetDefaultView(family);
+              view.Refresh();
+
+              MessageBox.Show($"Photo added successfully to {person.FullName}", "Photo Added", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch (Exception ex)
+            {
+              MessageBox.Show($"Could not add photo: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+          }
+        }
+      }
+    }
+
+    /// <summary>
+    /// Story icon was clicked in the family list - open story preview
+    /// </summary>
+    private void StoryIcon_Click(object sender, RoutedEventArgs e)
+    {
+      if (sender is System.Windows.Shapes.Path path && path.Tag is Person person)
+      {
+        // Open the story preview window
+        StoryPreviewWindow storyWindow = new StoryPreviewWindow(person);
+        storyWindow.Owner = Window.GetWindow(this);
+        storyWindow.ShowDialog();
+      }
+    }
   }
 
   /// <summary>

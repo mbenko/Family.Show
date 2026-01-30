@@ -11,6 +11,8 @@ class FamilyTreeLayout {
         this.spouseYOffset = -20; // Spouses positioned slightly above their partner
         this.siblingColor = '#FFD700'; // Yellow for siblings
         this.generations = new Map(); // Track generation levels
+        this.spouseIds = new Set(); // Track all people who are spouses (not primary lineage)
+        this.focusPersonX = 0; // Track focus person's X position for centering
     }
 
     /**
@@ -62,6 +64,9 @@ class FamilyTreeLayout {
         // Track the focus person ID - ONLY this person's siblings will be shown
         this.focusPersonId = focusPerson.Id;
 
+        // Clear spouse tracking
+        this.spouseIds.clear();
+
         // Add focus person to generation 0
         if (!this.generations.has(focusGeneration)) {
             this.generations.set(focusGeneration, []);
@@ -77,6 +82,7 @@ class FamilyTreeLayout {
                 visited.add(spouse.Id);
                 personGeneration.set(spouse.Id, focusGeneration);
                 this.generations.get(focusGeneration).push(spouse);
+                this.spouseIds.add(spouse.Id); // Mark as spouse
             }
         });
 
@@ -95,6 +101,7 @@ class FamilyTreeLayout {
                         visited.add(spouse.Id);
                         personGeneration.set(spouse.Id, focusGeneration);
                         this.generations.get(focusGeneration).push(spouse);
+                        this.spouseIds.add(spouse.Id); // Mark as spouse
                     }
                 });
             }
@@ -150,13 +157,14 @@ class FamilyTreeLayout {
                 }
                 this.generations.get(generation).push(child);
 
-                // Add child's spouse(s) to same generation
+                // Add child's spouse(s) to same generation and mark as spouse
                 const childSpouses = this.getSpouses(child);
                 childSpouses.forEach(spouse => {
                     if (!visited.has(spouse.Id)) {
                         visited.add(spouse.Id);
                         personGeneration.set(spouse.Id, generation);
                         this.generations.get(generation).push(spouse);
+                        this.spouseIds.add(spouse.Id); // Mark as spouse (not primary lineage)
                     }
                 });
 
@@ -196,12 +204,44 @@ class FamilyTreeLayout {
 
     /**
      * Position the focus person's generation (generation 0)
-     * Includes focus person, their spouse(s), and their siblings (but NOT ancestors' siblings)
+     * Siblings to the LEFT, focus person center, spouses to the RIGHT
      */
     positionFocusGeneration(focusPerson, people, y, nodes, edges) {
-        // Focus person at center
-        let currentX = 0;
+        // Calculate starting X position
+        // Need to know how many nodes to the left (siblings + their spouses)
+        const siblings = this.getSiblings(focusPerson);
+
+        // Count total nodes to the left of focus person
+        let leftNodeCount = 0;
+        siblings.forEach(sibling => {
+            leftNodeCount++; // The sibling
+            const sibSpouses = this.getSpouses(sibling);
+            leftNodeCount += sibSpouses.length; // Sibling's spouses
+        });
+
+        // Start from the left
+        let currentX = -(leftNodeCount * this.nodeSpacing.x);
+
+        // Add siblings and their spouses to the LEFT of focus person
+        siblings.forEach(sibling => {
+            if (!this.nodePositions.has(sibling.Id)) {
+                this.addNode(sibling, currentX, y, 'sibling', nodes);
+                currentX += this.nodeSpacing.x;
+
+                // Add sibling's spouse(s) slightly above, to the left of sibling
+                const sibSpouses = this.getSpouses(sibling);
+                sibSpouses.forEach(sibSpouse => {
+                    if (!this.nodePositions.has(sibSpouse.Id)) {
+                        this.addNode(sibSpouse, currentX, y + this.spouseYOffset, 'spouse', nodes);
+                        currentX += this.nodeSpacing.x;
+                    }
+                });
+            }
+        });
+
+        // Focus person at center (currentX should now be at 0)
         this.addNode(focusPerson, currentX, y, 'primary', nodes);
+        this.focusPersonX = currentX; // Store focus person's X position for centering descendants
         currentX += this.nodeSpacing.x;
 
         // Spouses to the right, slightly above
@@ -209,25 +249,6 @@ class FamilyTreeLayout {
         spouses.forEach(spouse => {
             this.addNode(spouse, currentX, y + this.spouseYOffset, 'spouse', nodes);
             currentX += this.nodeSpacing.x;
-        });
-
-        // Siblings to the right of spouses (ONLY for the focus person)
-        const siblings = this.getSiblings(focusPerson);
-        siblings.forEach(sibling => {
-            if (!this.nodePositions.has(sibling.Id)) {
-                this.addNode(sibling, currentX, y, 'sibling', nodes);
-
-                // Add sibling's spouse(s) slightly above
-                const sibSpouses = this.getSpouses(sibling);
-                sibSpouses.forEach(sibSpouse => {
-                    if (!this.nodePositions.has(sibSpouse.Id)) {
-                        currentX += this.nodeSpacing.x;
-                        this.addNode(sibSpouse, currentX, y + this.spouseYOffset, 'spouse', nodes);
-                    }
-                });
-
-                currentX += this.nodeSpacing.x;
-            }
         });
     }
 
@@ -260,26 +281,37 @@ class FamilyTreeLayout {
 
     /**
      * Position descendant generation (children, grandchildren, etc.)
+     * Spouses positioned to the LEFT of each person
+     * Centered around focus person's X position
      */
     positionDescendantGeneration(people, y, nodes, edges) {
         // Sort children by birth date within each family group
         const sortedPeople = this.sortByParentPositionsAndAge(people);
 
-        let currentX = -(sortedPeople.length * this.nodeSpacing.x) / 2;
+        // Calculate total width needed (people + their spouses)
+        let totalNodes = 0;
+        sortedPeople.forEach(person => {
+            const spouses = this.getSpouses(person);
+            totalNodes += spouses.length; // Spouses first
+            totalNodes++; // Then the person
+        });
+
+        // Center around focus person's X position instead of 0
+        let currentX = this.focusPersonX - (totalNodes * this.nodeSpacing.x) / 2;
 
         sortedPeople.forEach(person => {
             if (!this.nodePositions.has(person.Id)) {
-                this.addNode(person, currentX, y, 'descendant', nodes);
-
-                // Add spouse(s) slightly above
+                // Add spouse(s) to the LEFT, slightly above
                 const spouses = this.getSpouses(person);
                 spouses.forEach(spouse => {
                     if (!this.nodePositions.has(spouse.Id)) {
-                        currentX += this.nodeSpacing.x;
                         this.addNode(spouse, currentX, y + this.spouseYOffset, 'spouse', nodes);
+                        currentX += this.nodeSpacing.x;
                     }
                 });
 
+                // Add the person after their spouse(s)
+                this.addNode(person, currentX, y, 'descendant', nodes);
                 currentX += this.nodeSpacing.x;
             }
         });
@@ -340,21 +372,35 @@ class FamilyTreeLayout {
 
     /**
      * Add all edges between positioned nodes
+     * Rules:
+     * - Spouses (anyone in spouseIds set): NO parent-child edges
+     * - Siblings of focus person: NO parent-child edges
+     * - Everyone else: YES parent-child edges to their children
+     * - Everyone: YES spouse arc edges
      */
     addAllEdges(nodes, edges) {
+        // Get siblings of focus person
+        const focusPerson = this.findPerson(this.focusPersonId);
+        const focusSiblingIds = new Set(this.getSiblings(focusPerson).map(s => s.Id));
+
         nodes.forEach(node => {
             const person = this.findPerson(node.data.id);
             if (!person) return;
 
-            // Parent-child edges
-            const children = this.getChildren(person);
-            children.forEach(child => {
-                if (this.nodePositions.has(child.Id)) {
-                    this.addParentChildEdge(person.Id, child.Id, edges);
-                }
-            });
+            // Parent-child edges - SKIP for spouses and siblings of focus person
+            const isSpouse = this.spouseIds.has(person.Id);
+            const isFocusSibling = focusSiblingIds.has(person.Id);
 
-            // Spouse edges
+            if (!isSpouse && !isFocusSibling) {
+                const children = this.getChildren(person);
+                children.forEach(child => {
+                    if (this.nodePositions.has(child.Id)) {
+                        this.addParentChildEdge(person.Id, child.Id, edges);
+                    }
+                });
+            }
+
+            // Spouse edges - everyone gets these
             const spouses = this.getSpouses(person);
             spouses.forEach(spouse => {
                 if (this.nodePositions.has(spouse.Id)) {

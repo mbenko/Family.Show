@@ -169,8 +169,14 @@
     <Compile Include="FirstNamePossessiveFormConverter.cs" />
     <Compile Include="ImageConverter.cs" />
     <Compile Include="NotConverter.cs" />
+    <Compile Include="PhotoGalleryWindow.xaml.cs">
+      <DependentUpon>PhotoGalleryWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="PrimaryAvatarConverter.cs" />
     <Compile Include="Settings.cs" />
+    <Compile Include="StoryPreviewWindow.xaml.cs">
+      <DependentUpon>StoryPreviewWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ValueConverters.cs" />
     <Compile Include="Controls\Welcome.xaml.cs">
       <SubType>Code</SubType>
@@ -193,8 +199,11 @@
     <None Include="FamilyShow_TemporaryKey.pfx" />
     <None Include="FAMILY_LIST_AGE_AND_STYLING.md" />
     <None Include="FAMILY_LIST_DATE_CONTROLS.md" />
+    <None Include="FAMILY_LIST_ICONS.md" />
     <None Include="MENU_POPUP_FIX.md" />
     <None Include="MENU_REORGANIZATION.md" />
+    <None Include="PHOTO_ICON_DRAG_DROP.md" />
+    <None Include="PHOTO_SYSTEM_EXPLANATION.md" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -330,6 +339,12 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="PhotoGalleryWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="StoryPreviewWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Resource Include="Sample Files\Images\Edward VII.jpg" />
     <Resource Include="Sample Files\Images\Edward VIII.jpg" />
